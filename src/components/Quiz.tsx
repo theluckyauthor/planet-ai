@@ -8,7 +8,7 @@ import { trackQuizStart, trackQuizCompletion } from "@/utils/analytics";
 import { toast } from "@/components/ui/use-toast";
 import React from "react";
 
-const questions = [
+const questions = [ 
   {
     question: "How would you describe your typical conversations with this friend?",
     placeholder: "Deep and personal? Full of jokes? Occasional check-ins? Mostly updates on life?"
@@ -36,8 +36,13 @@ const questions = [
   {
     question: "If you and this friend drifted apart, why do you think it would happen?",
     placeholder: "Consider what might challenge your friendship..."
+  },
+  {
+    question: "Where do you see this friendship in five years?",
+    placeholder: "Growing stronger? Naturally fading? Evolving into something new?"
   }
 ];
+
 
 function generateUID(): string {
   return Math.random().toString(36).substring(2) + Date.now().toString(36);
