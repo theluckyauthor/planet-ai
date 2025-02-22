@@ -1,0 +1,22 @@
+friend-planet-quiz/
+├── src/
+│   ├── components/
+│   │   ├── quiz/
+│   │   │   ├── quiz-form.tsx
+│   │   │   ├── quiz-question.tsx
+│   │   │   └── result.tsx
+│   │   ├── layout/
+│   │   │   ├── header.tsx
+│   │   │   └── footer.tsx
+│   │   └── shared/
+│   │       └── planet-card.tsx
+│   ├── lib/
+│   │   └── utils.ts
+│   ├── data/
+│   │   ├── questions.ts
+│   │   └── planets.ts
+│   ├── app.tsx
+│   └── main.tsx
+├── public/
+├── components.json
+└── tailwind.config.ts
