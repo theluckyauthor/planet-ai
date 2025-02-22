@@ -14,7 +14,16 @@ export default defineConfig(({ mode }) => ({
         changeOrigin: true,
         secure: false,
       }
-    }
+    },
+    fs: {
+      strict: true,
+    },
+    middlewareMode: false
+  },
+  build: {
+    modulePreload: true,
+    target: 'esnext',
+    minify: mode === 'production',
   },
   plugins: [
     react(),
