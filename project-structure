@@ -1,22 +1,33 @@
 friend-planet-quiz/
 ├── src/
 │   ├── components/
-│   │   ├── quiz/
-│   │   │   ├── quiz-form.tsx
-│   │   │   ├── quiz-question.tsx
-│   │   │   └── result.tsx
-│   │   ├── layout/
-│   │   │   ├── header.tsx
-│   │   │   └── footer.tsx
-│   │   └── shared/
-│   │       └── planet-card.tsx
+│   │   ├── ui/
+│   │   │   ├── button.tsx
+│   │   │   ├── card.tsx
+│   │   │   ├── input.tsx
+│   │   │   ├── label.tsx
+│   │   │   ├── progress.tsx
+│   │   │   ├── planetComparison.tsx
+│   │   │   ├── sidebar.tsx
+│   │   │   └── use-toast.tsx
+│   │   ├── About.tsx
+│   │   ├── CompareResults.tsx
+│   │   ├── Quiz.tsx
+│   │   ├── Result.tsx
+│   │   └── WelcomeScreen.tsx
+│   ├── utils/
+│   │   ├── analytics.ts
+│   │   ├── planetData.ts
+│   │   └── quizScoring.ts
 │   ├── lib/
 │   │   └── utils.ts
-│   ├── data/
-│   │   ├── questions.ts
-│   │   └── planets.ts
-│   ├── app.tsx
+│   ├── App.tsx
 │   └── main.tsx
 ├── public/
+│   └── planets/
+│       ├── sun.png
+│       ├── mercury.png
+│       └── ...
 ├── components.json
+├── package.json
 └── tailwind.config.ts
