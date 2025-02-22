@@ -156,7 +156,7 @@ export const Result = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-purple-900 to-black">
-      <Card className="glass-card w-full max-w-2xl p-8 space-y-8">
+      <Card className="w-full max-w-2xl p-8 space-y-8 bg-black/30 backdrop-blur-lg border-white/10">
         <div ref={resultsRef} className="space-y-8 p-8 rounded-lg">
           <div className="space-y-4 text-center">
             <div className="floating inline-block">
@@ -165,7 +165,7 @@ export const Result = () => {
               </div>
             </div>
             <div className="space-y-2">
-              <p className="text-xl text-white/80">
+              <p className="text-xl text-white/90">
                 {getCelestialLabel(planetType)} is:
               </p>
               <h1 className="text-3xl font-bold text-white">
@@ -173,12 +173,12 @@ export const Result = () => {
                 {planetData[planetType as keyof typeof planetData].title}
               </h1>
             </div>
-            <p className="text-muted-foreground">
+            <p className="text-white/80">
               {name} & {friendName}
             </p>
           </div>
 
-          <p className="text-center text-white">
+          <p className="text-center text-white/90">
             {planetData[planetType as keyof typeof planetData].description}
           </p>
 
@@ -187,14 +187,14 @@ export const Result = () => {
               {planetData[planetType as keyof typeof planetData].traits.map((trait, index) => (
                 <span
                   key={index}
-                  className="px-3 py-1 rounded-full bg-white/10 text-white text-sm"
+                  className="px-3 py-1 rounded-full bg-white/20 text-white text-sm"
                 >
                   {trait}
                 </span>
               ))}
             </div>
             
-            <p className="text-center text-white/80 italic">
+            <p className="text-center text-white/90 italic">
               💫 {planetData[planetType as keyof typeof planetData].nurture}
             </p>
           </div>
@@ -202,12 +202,12 @@ export const Result = () => {
           {description && (
             <div className="space-y-2">
               <h3 className="text-lg font-semibold text-white text-center">Your Friendship Description</h3>
-              <p className="text-center text-white/80 italic">"{description}"</p>
+              <p className="text-center text-white/90 italic">"{description}"</p>
             </div>
           )}
 
-          {/* Add watermark */}
-          <div className="text-center text-white/40 text-sm mt-4">
+          {/* Watermark */}
+          <div className="text-center text-white/60 text-sm mt-4">
             https://planety-quiz.vercel.app/ ✨
           </div>
         </div>
@@ -216,7 +216,7 @@ export const Result = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
             <Button
               onClick={handleShare}
-              className="bg-white/10 hover:bg-white/20 text-white"
+              className="bg-white/20 hover:bg-white/30 text-white"
               variant="outline"
             >
               <Share2 className="mr-2 h-4 w-4" />
@@ -224,14 +224,14 @@ export const Result = () => {
             </Button>
             <Button
               onClick={handleDownloadImage}
-              className="bg-white/10 hover:bg-white/20 text-white"
+              className="bg-white/20 hover:bg-white/30 text-white"
             >
               <Download className="mr-2 h-4 w-4" />
               Download Result
             </Button>
             <Button
               onClick={handleRetake}
-              className="bg-white/10 hover:bg-white/20 text-white"
+              className="bg-white/20 hover:bg-white/30 text-white"
             >
               Retake Quiz
             </Button>
@@ -242,7 +242,7 @@ export const Result = () => {
               href="https://forms.gle/f3vUAD96ADCarQjUA"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white underline hover:text-gray-300"
+              className="text-white/90 underline hover:text-white"
             >
               Give us your feedback!
             </a>
@@ -250,11 +250,11 @@ export const Result = () => {
           
           {showShareUrl && (
             <div className="space-y-2">
-              <p className="text-center text-white/60 text-sm">
+              <p className="text-center text-white/80 text-sm">
                 Share this link with {friendName} to compare results:
               </p>
               <div 
-                className="p-3 bg-white/5 rounded border border-white/10 text-white/90 text-sm break-all cursor-text"
+                className="p-3 bg-black/40 rounded border border-white/20 text-white text-sm break-all cursor-text"
                 onClick={(e) => e.currentTarget.select()}
               >
                 {`${window.location.origin}/compare?data=${btoa(JSON.stringify({

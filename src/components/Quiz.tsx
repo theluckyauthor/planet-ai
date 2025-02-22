@@ -174,16 +174,20 @@ export const Quiz = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-purple-900 to-black">
-      <Card className="glass-card w-full max-w-2xl p-8 space-y-8 bg-black/30 backdrop-blur-lg border-white/10">
+      <Card className="w-full max-w-2xl p-8 space-y-8 bg-black/30 backdrop-blur-lg border-white/10">
         {isComparisonQuiz && (
-          <div className="text-center text-white mb-4">
-            <h2 className="text-xl font-bold">
+          <div className="text-center mb-4">
+            <h2 className="text-xl font-bold text-white">
               {location.state.originalResult.n} has invited you, {location.state.originalResult.fn}, to take this friendship quiz!
             </h2>
           </div>
         )}
+
         <div className="space-y-4">
-          <Progress value={progress} className="w-full" />
+          <Progress 
+            value={progress} 
+            className="w-full bg-white/10"
+          />
           <p className="text-sm text-white/70 text-center">
             Question {currentQuestion + 1} of {questions.length}
           </p>
@@ -199,13 +203,13 @@ export const Quiz = () => {
               placeholder={currentQ.placeholder}
               value={answers[currentQuestion]}
               onChange={(e) => handleAnswer(e.target.value)}
-              className="min-h-[150px] w-full max-w-lg bg-white/10 border-white/20 text-white placeholder:text-white/50"
+              className="min-h-[150px] w-full max-w-lg bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:ring-white/30 focus:border-white/30"
             />
           </div>
 
           <Button
             onClick={handleNext}
-            className="w-full bg-white/10 hover:bg-white/20 text-white border-white/20"
+            className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:opacity-90 transition-opacity"
             disabled={!answers[currentQuestion].trim()}
           >
             {currentQuestion < questions.length - 1 ? "Next Question" : "Complete Quiz"}

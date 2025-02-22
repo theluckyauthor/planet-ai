@@ -1,3 +1,0 @@
-export const QuizForm = () => {
-  // ... existing Quiz component code ...
-}; 
