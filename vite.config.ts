@@ -24,6 +24,11 @@ export default defineConfig(({ mode }) => ({
     modulePreload: true,
     target: 'esnext',
     minify: mode === 'production',
+    rollupOptions: {
+      output: {
+        format: 'es'
+      }
+    }
   },
   plugins: [
     react(),
