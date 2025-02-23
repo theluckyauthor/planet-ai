@@ -13,18 +13,18 @@
   ],
   "routes": [
     {
+      "src": "/(.*).js",
+      "headers": {
+        "Content-Type": "application/javascript"
+      }
+    },
+    {
       "src": "/api/(.*)",
       "dest": "/api/$1"
     },
     {
       "src": "/(.*)",
       "dest": "/index.html"
-    },
-    {
-      "src": "/(.*).js",
-      "headers": {
-        "Content-Type": "application/javascript"
-      }
     }
   ]
 }
