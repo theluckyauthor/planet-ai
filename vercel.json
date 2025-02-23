@@ -19,6 +19,12 @@
       }
     },
     {
+      "src": "/(.*).css",
+      "headers": {
+        "Content-Type": "text/css"
+      }
+    },
+    {
       "src": "/api/(.*)",
       "dest": "/api/$1"
     },
