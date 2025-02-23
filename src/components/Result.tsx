@@ -203,7 +203,7 @@ export const Result = () => {
       <Card className="w-full max-w-2xl p-8 space-y-8 bg-black/30 backdrop-blur-lg border-white/10">
         <div ref={resultsRef} className="space-y-8 p-8 rounded-lg">
           <div className="space-y-4 text-center">
-            <div className="floating inline-block">
+            <div className="floating-emoji inline-block">
               <div className="text-8xl mb-4">
                 {planetData[planetType].emoji}
               </div>
