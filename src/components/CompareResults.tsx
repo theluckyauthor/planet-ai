@@ -7,7 +7,7 @@ import { PlanetType } from "@/utils/analytics";
 import { planetData } from "@/utils/planetData";
 import html2canvas from "html2canvas";
 import { toast } from "@/components/ui/use-toast";
-import { combinations } from "@/utils/planetData"; // Import combinations
+import { combinations, rankings } from "@/utils/planetData"; // Import both from planetData
 
 interface ComparisonResultProps {
   resultId: string;
@@ -15,24 +15,61 @@ interface ComparisonResultProps {
   friendName: string;
   planetType: PlanetType;
   description: string;
+  confidence?: number;
+  reasoning?: string;
   comparisonResult: {
     name: string;
     friendName: string;
     planetType: PlanetType;
     description: string;
+    confidence?: number;
+    reasoning?: string;
   };
 }
 
-const PlanetComparison = ({ myPlanet, friendPlanet, myName, friendName, myDescription, friendDescription }: {
+const RankingBar = ({ value, label }: { value: string; label: string }) => {
+  const getWidth = (val: string) => {
+    switch (val) {
+      case 'high': return 'w-full';
+      case 'average': return 'w-2/3';
+      case 'low': return 'w-1/3';
+      default: return 'w-0';
+    }
+  };
+
+  return (
+    <div className="space-y-1">
+      <div className="flex justify-between text-sm text-white/80">
+        <span>{label}</span>
+      </div>
+      <div className="h-2 bg-white/10 rounded-full">
+        <div className={`h-full bg-white/30 rounded-full ${getWidth(value)}`} />
+      </div>
+    </div>
+  );
+};
+
+const PlanetComparison = ({ 
+  myPlanet, 
+  friendPlanet, 
+  myName, 
+  friendName, 
+  myDescription, 
+  friendDescription,
+  confidence,
+  reasoning 
+}: {
   myPlanet: PlanetType;
   friendPlanet: PlanetType;
   myName: string;
   friendName: string;
   myDescription: string;
   friendDescription: string;
+  confidence?: number;
+  reasoning?: string;
 }) => {
   const myPlanetInfo = planetData[myPlanet];
-  const friendPlanetInfo = planetData[friendPlanet];
+  const planetRankings = rankings[myPlanet];
 
   return (
     <div className="space-y-6 text-center">
@@ -44,11 +81,49 @@ const PlanetComparison = ({ myPlanet, friendPlanet, myName, friendName, myDescri
         <h2 className="text-xl text-white">
           {myPlanetInfo.title}
         </h2>
+        {confidence && (
+          <p className="text-white/70 mt-2">
+            Match Confidence: {Math.round(confidence * 100)}%
+          </p>
+        )}
       </div>
-      <p className="text-white/80 italic">"{myDescription}"</p>
-      <p className="text-white/60">{myPlanetInfo.description}</p>
-      <h3 className="text-lg text-white">Traits: {myPlanetInfo.traits.join(", ")}</h3>
-      <p className="text-white/60">Nurture: {myPlanetInfo.nurture}</p>
+      
+      <p className="text-white/90">
+        {myPlanetInfo.description}
+      </p>
+
+      {reasoning && (
+        <div className="bg-white/10 p-4 rounded-lg">
+          <p className="text-center text-white/80 italic">
+            "{reasoning}"
+          </p>
+        </div>
+      )}
+
+      <div className="space-y-6">
+        <div className="flex flex-wrap gap-2 justify-center">
+          {myPlanetInfo.traits.map((trait, index) => (
+            <span
+              key={index}
+              className="px-3 py-1 rounded-full bg-white/20 text-white text-sm"
+            >
+              {trait}
+            </span>
+          ))}
+        </div>
+        
+        <div className="space-y-3">
+          <RankingBar value={planetRankings.emotionalDepth} label="Emotional Depth" />
+          <RankingBar value={planetRankings.interactionFrequency} label="Interaction Frequency" />
+          <RankingBar value={planetRankings.spontaneity} label="Spontaneity" />
+          <RankingBar value={planetRankings.contextDependence} label="Context Dependence" />
+          <RankingBar value={planetRankings.growthChallenge} label="Growth Challenge" />
+        </div>
+
+        <p className="text-center text-white/90 italic">
+          💫 {myPlanetInfo.nurture}
+        </p>
+      </div>
       
       <hr className="my-4 border-t border-white/30" />
     </div>
@@ -151,11 +226,11 @@ export const CompareResults = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-purple-900 to-black">
-      <Card className="glass-card w-full max-w-2xl p-8 space-y-8">
+      <Card className="w-full max-w-2xl p-8 space-y-8 bg-black/30 backdrop-blur-lg border-white/10">
         <div ref={resultsRef} className="space-y-8 p-8 rounded-lg">
           <div className="text-center text-white mb-4">
             <h2 className="text-xl font-bold">
-              {state.friendName} has invited you, {state.name}, to take this friendship quiz!
+              {state.comparisonResult.name} has invited you, {state.name}, to take this friendship quiz!
             </h2>
           </div>
 
@@ -167,6 +242,8 @@ export const CompareResults = () => {
               friendName={state.comparisonResult.name}
               myDescription={state.description}
               friendDescription={state.comparisonResult.description}
+              confidence={state.confidence}
+              reasoning={state.reasoning}
             />
           </div>
           <div>
@@ -177,6 +254,8 @@ export const CompareResults = () => {
               friendName={state.name}
               myDescription={state.comparisonResult.description}
               friendDescription={state.description}
+              confidence={state.comparisonResult.confidence}
+              reasoning={state.comparisonResult.reasoning}
             />
           </div>
           <div>
@@ -186,36 +265,36 @@ export const CompareResults = () => {
             />
           </div>
 
-          <div className="text-center text-white/40 text-sm mt-4">
+          <div className="text-center text-white/60 text-sm mt-4">
             https://planety-quiz.vercel.app/ ✨
           </div>
+        </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-            <Button
-              onClick={() => navigate("/")}
-              className="bg-white/10 hover:bg-white/20 text-white w-full sm:w-auto"
-            >
-              Take New Quiz
-            </Button>
-            <Button
-              onClick={handleDownloadImage}
-              className="bg-white/10 hover:bg-white/20 text-white w-full sm:w-auto"
-            >
-              Download Results
-              <Download className="ml-2 h-4 w-4" />
-            </Button>
-          </div>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
+          <Button
+            onClick={() => navigate("/")}
+            className="bg-white/20 hover:bg-white/30 text-white"
+          >
+            Take New Quiz
+          </Button>
+          <Button
+            onClick={handleDownloadImage}
+            className="bg-white/20 hover:bg-white/30 text-white"
+          >
+            <Download className="mr-2 h-4 w-4" />
+            Download Results
+          </Button>
+        </div>
 
-          <div className="text-center mt-4">
-            <a
-              href="https://forms.gle/f3vUAD96ADCarQjUA"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white underline hover:text-gray-300"
-            >
-              Give us your feedback!
-            </a>
-          </div>
+        <div className="text-center mt-4">
+          <a
+            href="https://forms.gle/f3vUAD96ADCarQjUA"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-white/90 underline hover:text-white"
+          >
+            Give us your feedback!
+          </a>
         </div>
       </Card>
     </div>

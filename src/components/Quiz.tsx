@@ -7,42 +7,38 @@ import { Textarea } from "@/components/ui/textarea";
 import { trackQuizStart, trackQuizCompletion } from "@/utils/analytics";
 import { toast } from "@/components/ui/use-toast";
 import React from "react";
+import { calculatePlanetType } from '@/utils/quizScoring';
 
-const questions = [ 
+const questions = [
   {
-    question: "How would you describe your typical conversations with this friend?",
-    placeholder: "Deep and personal? Full of jokes? Occasional check-ins? Mostly updates on life?"
+    question: "In what settings do you usually interact with this friend, and how much does your friendship rely on those specific contexts?",
+    placeholder: "Class, club, dorm, or events—and does your connection change outside these settings?"
   },
   {
-    question: "What's a memory with this friend that stands out to you?",
-    placeholder: "Share a story that captures your friendship..."
+    question: "How would you describe the emotional depth of your interactions?",
+    placeholder: "Do you share personal stories and vulnerabilities, or is it more lighthearted and casual?"
   },
   {
-    question: "How do you usually stay in touch, and how often?",
-    placeholder: "Daily texts? Voice notes? Long calls? Occasional memes? In-person meetups?"
+    question: "How frequently do you connect with this friend, and through which means?",
+    placeholder: "Daily texts, weekly calls, occasional meetups, or sporadic check-ins?"
   },
   {
-    question: "If you needed emotional support, how would this friend respond?",
-    placeholder: "Drop everything to help? Listen but keep it light? Offer practical advice?"
+    question: "Are your interactions and plans with this friend spontaneous or planned?",
+    placeholder: "Do you decide on the fly, or are meetings scheduled well in advance?"
   },
   {
-    question: "How do you usually make plans together?",
-    placeholder: "Spontaneously? Planned in advance? Only for occasions? Rarely?"
+    question: "How does this friendship challenge you to grow or push you out of your comfort zone?",
+    placeholder: "Does your friend inspire you to try new things, offer constructive feedback, or motivate you to change?"
   },
   {
-    question: "What's something unspoken but understood between you two?",
-    placeholder: "Think about your unique dynamic or shared understanding..."
-  },
-  {
-    question: "If you and this friend drifted apart, why do you think it would happen?",
-    placeholder: "Consider what might challenge your friendship..."
+    question: "How do you feel this friendship is like?",
+    placeholder: "Describe the overall vibe or character of your connection..."
   },
   {
     question: "Where do you see this friendship in five years?",
-    placeholder: "Growing stronger? Naturally fading? Evolving into something new?"
+    placeholder: "Growing stronger, naturally evolving, or perhaps fading over time?"
   }
 ];
-
 
 function generateUID(): string {
   return Math.random().toString(36).substring(2) + Date.now().toString(36);
@@ -120,20 +116,9 @@ export const Quiz = () => {
       });
 
       try {
-        // Call the API endpoint instead of direct OpenAI call
-        const response = await fetch('/api/quiz-analysis', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ answers })
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to analyze answers');
-        }
-
-        const { planetType } = await response.json();
+        // Call calculatePlanetType directly
+        const planetType = await calculatePlanetType(answers);
+        
         trackQuizCompletion(planetType);
         const resultId = generateUID();
 

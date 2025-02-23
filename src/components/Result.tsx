@@ -2,11 +2,11 @@ import { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Share2, Download } from "lucide-react";
+import { Share2, Download, Info } from "lucide-react";
 import { PlanetType } from "@/utils/analytics";
 import React from "react";
 import { toast } from "@/components/ui/use-toast";
-import { planetData } from "@/utils/planetData";
+import { planetData, rankings } from "@/utils/planetData";
 import html2canvas from "html2canvas";
 
 interface ComparisonProps {
@@ -16,9 +16,42 @@ interface ComparisonProps {
   friendName: string;
   myDescription: string;
   friendDescription?: string;
+  confidence?: number;
+  reasoning?: string;
 }
 
-const PlanetComparison = ({ myPlanet, friendPlanet, myName, friendName, myDescription, friendDescription }: ComparisonProps) => {
+const RankingBar = ({ value, label }: { value: string; label: string }) => {
+  const getWidth = (val: string) => {
+    switch (val) {
+      case 'high': return 'w-full';
+      case 'average': return 'w-2/3';
+      case 'low': return 'w-1/3';
+      default: return 'w-0';
+    }
+  };
+
+  return (
+    <div className="space-y-1">
+      <div className="flex justify-between text-sm text-white/80">
+        <span>{label}</span>
+      </div>
+      <div className="h-2 bg-white/10 rounded-full">
+        <div className={`h-full bg-white/30 rounded-full ${getWidth(value)}`} />
+      </div>
+    </div>
+  );
+};
+
+const PlanetComparison = ({ 
+  myPlanet, 
+  friendPlanet, 
+  myName, 
+  friendName, 
+  myDescription, 
+  friendDescription,
+  confidence,
+  reasoning 
+}: ComparisonProps) => {
   if (!friendPlanet) {
     return null;
   }
@@ -33,6 +66,11 @@ const PlanetComparison = ({ myPlanet, friendPlanet, myName, friendName, myDescri
           </div>
           <p className="text-white mt-2">{myName}</p>
           <p className="text-white/80 italic text-sm mt-2">"{myDescription}"</p>
+          {confidence && (
+            <p className="text-white/60 text-sm mt-2">
+              Confidence: {Math.round(confidence * 100)}%
+            </p>
+          )}
         </div>
         <div className="floating delay-75">
           <div className="text-6xl mb-2">
@@ -42,6 +80,11 @@ const PlanetComparison = ({ myPlanet, friendPlanet, myName, friendName, myDescri
           <p className="text-white/80 italic text-sm mt-2">"{friendDescription}"</p>
         </div>
       </div>
+      {reasoning && (
+        <div className="mt-4 p-4 bg-white/10 rounded-lg">
+          <p className="text-white/90 text-sm italic">"{reasoning}"</p>
+        </div>
+      )}
     </div>
   );
 };
@@ -49,7 +92,16 @@ const PlanetComparison = ({ myPlanet, friendPlanet, myName, friendName, myDescri
 export const Result = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { resultId, name, friendName, planetType, description, comparisonResult } = location.state || {};
+  const { 
+    resultId, 
+    name, 
+    friendName, 
+    planetType, 
+    description, 
+    comparisonResult,
+    confidence,
+    reasoning
+  } = location.state || {};
   const [showShareUrl, setShowShareUrl] = useState(false);
   const resultsRef = useRef<HTMLDivElement>(null);
 
@@ -65,26 +117,23 @@ export const Result = () => {
     return null;
   }
 
+  const planetRankings = rankings[planetType as keyof typeof rankings];
+
   const handleShare = async () => {
     try {
-      // Create a data object with the essential information
       const shareData = {
         n: name,
         fn: friendName,
         pt: planetType,
-        d: description
+        d: description,
+        c: confidence,
+        r: reasoning
       };
 
-      // Encode the data as base64 to make it URL-safe
       const encodedData = btoa(JSON.stringify(shareData));
-      
-      // Create the share URL - link directly to comparison quiz
-      const shareUrl = `https://planety-quiz.vercel.app/compare?data=${encodedData}`;
-      
-      // Create share text
+      const shareUrl = `${window.location.origin}/compare?data=${encodedData}`;
       const shareText = `${name} wants to compare your friendship! Take the quiz and see how your views match. 🌟`;
       
-      // Try native share first
       if (navigator.share) {
         await navigator.share({
           title: "Friend Planet Quiz",
@@ -95,7 +144,6 @@ export const Result = () => {
     } catch (error) {
       console.error("Sharing failed", error);
     } finally {
-      // Always show the URL for manual copying
       setShowShareUrl(true);
     }
   };
@@ -106,14 +154,10 @@ export const Result = () => {
 
   const getCelestialLabel = (planetType: string) => {
     switch (planetType) {
-      case 'sun':
-        return 'Your Friendship Star';
-      case 'moon':
-        return 'Your Friendship Satellite';
-      case 'comet':
-        return 'Your Friendship';
-      default:
-        return 'Your Friendship Planet';
+      case 'sun': return 'Your Friendship Star';
+      case 'moon': return 'Your Friendship Satellite';
+      case 'comet': return 'Your Friendship';
+      default: return 'Your Friendship Planet';
     }
   };
 
@@ -161,7 +205,7 @@ export const Result = () => {
           <div className="space-y-4 text-center">
             <div className="floating inline-block">
               <div className="text-8xl mb-4">
-                {planetData[planetType as keyof typeof planetData].emoji}
+                {planetData[planetType].emoji}
               </div>
             </div>
             <div className="space-y-2">
@@ -170,8 +214,13 @@ export const Result = () => {
               </p>
               <h1 className="text-3xl font-bold text-white">
                 {planetType === 'comet' ? 'Comet' : (planetType.charAt(0).toUpperCase() + planetType.slice(1) + ' - ')}
-                {planetData[planetType as keyof typeof planetData].title}
+                {planetData[planetType].title}
               </h1>
+              {confidence && (
+                <p className="text-white/70">
+                  Match Confidence: {Math.round(confidence * 100)}%
+                </p>
+              )}
             </div>
             <p className="text-white/80">
               {name} & {friendName}
@@ -179,12 +228,20 @@ export const Result = () => {
           </div>
 
           <p className="text-center text-white/90">
-            {planetData[planetType as keyof typeof planetData].description}
+            {planetData[planetType].description}
           </p>
 
-          <div className="space-y-4">
+          {reasoning && (
+            <div className="bg-white/10 p-4 rounded-lg">
+              <p className="text-center text-white/80 italic">
+                "{reasoning}"
+              </p>
+            </div>
+          )}
+
+          <div className="space-y-6">
             <div className="flex flex-wrap gap-2 justify-center">
-              {planetData[planetType as keyof typeof planetData].traits.map((trait, index) => (
+              {planetData[planetType].traits.map((trait, index) => (
                 <span
                   key={index}
                   className="px-3 py-1 rounded-full bg-white/20 text-white text-sm"
@@ -194,17 +251,18 @@ export const Result = () => {
               ))}
             </div>
             
+            <div className="space-y-3">
+              <RankingBar value={planetRankings.emotionalDepth} label="Emotional Depth" />
+              <RankingBar value={planetRankings.interactionFrequency} label="Interaction Frequency" />
+              <RankingBar value={planetRankings.spontaneity} label="Spontaneity" />
+              <RankingBar value={planetRankings.contextDependence} label="Context Dependence" />
+              <RankingBar value={planetRankings.growthChallenge} label="Growth Challenge" />
+            </div>
+
             <p className="text-center text-white/90 italic">
-              💫 {planetData[planetType as keyof typeof planetData].nurture}
+              💫 {planetData[planetType].nurture}
             </p>
           </div>
-
-          {description && (
-            <div className="space-y-2">
-              <h3 className="text-lg font-semibold text-white text-center">Your Friendship Description</h3>
-              <p className="text-center text-white/90 italic">"{description}"</p>
-            </div>
-          )}
 
           {/* Watermark */}
           <div className="text-center text-white/60 text-sm mt-4">
@@ -261,7 +319,9 @@ export const Result = () => {
                   n: name,
                   fn: friendName,
                   pt: planetType,
-                  d: description
+                  d: description,
+                  c: confidence,
+                  r: reasoning
                 }))}`}
               </div>
             </div>
